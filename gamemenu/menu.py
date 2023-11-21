@@ -36,4 +36,4 @@ games = [{
         }
 }]
 
-game_dict = {"g-1":1, "g-2":2}
+game_dict = {"g-1":0, "g-2":1}

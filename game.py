@@ -1,4 +1,3 @@
-
 class Game:
     games = []
     def __init__(self, player_names, player_strategies, payoffMatrix, name=None):

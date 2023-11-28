@@ -14,26 +14,26 @@ games = [{
             ('D', 'D'): (-2, -2)
         }
 },
-# paper, scissors, rock game
+# P, S, R game
 {
     "game_id": "g-2",
-    "name": "paper, scissors, rock",
+    "name": "Paper, Scissor, Rock",
     "players": ["player1", "player2"],
     "strategies": [
-                ['paper', 'scissors', 'rock'],
-                ['paper', 'scissors', 'rock']
+                ['P', 'S', 'R'],
+                ['P', 'S', 'R']
             ],
     "payoff_matrix": {
-            ('paper', 'paper'): (0, 0),
-            ('paper', 'scissors'): (-1, 1),
-            ('paper', 'rock'): (1, -1),
-            ('scissors', 'paper'): (1, -1),
-            ('scissors', 'scissors'): (0, 0),
-            ('scissors', 'rock'): (-1, 1),
-            ('rock', 'paper'): (-1, 1),
-            ('rock', 'scissors'): (1, -1),
-            ('rock', 'rock'): (0, 0)
+            ('P', 'P'): (0, 0),
+            ('P', 'S'): (-1, 1),
+            ('P', 'R'): (1, -1),
+            ('S', 'P'): (1, -1),
+            ('S', 'S'): (0, 0),
+            ('S', 'R'): (-1, 1),
+            ('R', 'P'): (-1, 1),
+            ('R', 'S'): (1, -1),
+            ('R', 'R'): (0, 0)
         }
 }]
 
-game_dict = {"g-1":0, "g-2":1}
+menus = {g["game_id"]: g for g in games}

@@ -5,12 +5,16 @@ from gamepy.gamesheet.gameroom import GameRoom
 game_room = GameRoom(spreadsheets_id, scopes)
 
 class Player:
-    def __init__(self, name: str, strategies: list[str]):
+    def __init__(self, name, strategies, game_id=None):
         self.name = name
         self.strategies = strategies
         self.played_strategy = None
+        self.game_id = game_id
     def play(self, played_strategy):
         play_method(self, played_strategy)
+    def join(self, room_id):
+        game_room_id = self.game_id + ":" + room_id
+        game_room.register_player1_name(game_room_id, self.name)
 
 class Games:
     menus = menus
@@ -45,7 +49,7 @@ class Game(Games):
         super().__init__()
         self.name = name
         self.id = game_id
-        self.players = [Player(player_names[i], player_strategies[i]) for i in range(len(player_names))]
+        self.players = [Player(player_names[i], player_strategies[i], game_id=game_id) for i in range(len(player_names))]
         self.payoffMatrix = payoffMatrix
     def payoff(self):
         played_strategies = self.players[0].played_strategy, self.players[1].played_strategy
@@ -87,4 +91,3 @@ def play_method(player, played_strategy):
 def create_room(game, room_id):
     game_room_id = game.id +":"+room_id
     game_room.register_game_room(game_room_id)
-

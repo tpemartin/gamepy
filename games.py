@@ -24,7 +24,7 @@ class Games:
             self.__class__.games_played[game_id] = [game]
         else:
             self.__class__.games_played[game_id].append(game)
-        return game
+        return game, game.players
     def switch(self, game_id, index=0):
         return self.__class__.games_played[game_id][index]
     @classmethod
@@ -35,7 +35,7 @@ class Games:
             cls.games_played[game_id] = [game]
         else:
             cls.games_played[game_id].append(game)
-        return game
+        return game, game.players
     @classmethod
     def switch2(cls, game_id, index = 0):
         return cls.games_played[game_id][index]

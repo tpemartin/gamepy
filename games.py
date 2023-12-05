@@ -5,16 +5,20 @@ from gamepy.gamesheet.gameroom import GameRoom
 game_room = GameRoom(spreadsheets_id, scopes)
 
 class Player:
-    def __init__(self, name, strategies, game_id=None):
+    def __init__(self, name, strategies, game_id=None, isPlayer1=True):
         self.name = name
         self.strategies = strategies
         self.played_strategy = None
         self.game_id = game_id
+        self.isPlayer1 = isPlayer1
     def play(self, played_strategy):
         play_method(self, played_strategy)
     def join(self, room_id):
         game_room_id = self.game_id + ":" + room_id
-        game_room.register_player1_name(game_room_id, self.name)
+        if self.isPlayer1:
+            game_room.register_player1_name(game_room_id, self.name)
+        else:
+            game_room.register_player2_name(game_room_id, self.name)
 
 class Games:
     menus = menus

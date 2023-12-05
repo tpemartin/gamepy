@@ -15,14 +15,16 @@ class Games:
         pass
     def new(self, game_id):
         game = new_method(self, game_id)
+        # new game will be added to the class property games_played
         if (not self.__class__.games_played or 
             game_id not in self.__class__.games_played):
             self.__class__.games_played[game_id] = [game]
         else:
             self.__class__.games_played[game_id].append(game)
-        return game
+        return game, game.players
     def switch(self, game_id, index=0):
-        return self.__class__.games_played[game_id][index]
+        game = self.__class__.games_played[game_id][index]
+        return game, game.players
     @classmethod
     def new2(cls, game_id):
         game = new_method(cls, game_id)
@@ -31,10 +33,11 @@ class Games:
             cls.games_played[game_id] = [game]
         else:
             cls.games_played[game_id].append(game)
-        return game
+        return game, game.players
     @classmethod
     def switch2(cls, game_id, index = 0):
-        return cls.games_played[game_id][index]
+        game = cls.games_played[game_id][index]
+        return game, game.players
 
 class Game(Games):
     def __init__(self, player_names, player_strategies, payoffMatrix, name=None):
@@ -51,7 +54,6 @@ class Game(Games):
             print("Not all players have played their strategies yet.")
 
 # helpers
-
 def new_method(games, game_id):
     selected_game = games.menus[game_id] # access class property
     game = Game(
@@ -60,7 +62,7 @@ def new_method(games, game_id):
         selected_game["payoff_matrix"]
         )
     return game
-# helper function
+
 def payoff_method(game):
     played_strategies = game.players[0].played_strategy, game.players[1].played_strategy
     if all(played_strategies):

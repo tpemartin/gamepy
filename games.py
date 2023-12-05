@@ -53,7 +53,9 @@ class Game(Games):
         super().__init__()
         self.name = name
         self.id = game_id
-        self.players = [Player(player_names[i], player_strategies[i], game_id=game_id) for i in range(len(player_names))]
+        self.players = [Player(player_names[i], player_strategies[i], game_id=game_id,
+                               isPlayer1 = True if i == 0 else False
+                               ) for i in range(len(player_names))]
         self.payoffMatrix = payoffMatrix
     def payoff(self):
         played_strategies = self.players[0].played_strategy, self.players[1].played_strategy

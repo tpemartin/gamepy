@@ -1,4 +1,8 @@
 from gamepy.gamemenu.menu import menus
+from gamepy.gamesheet.gamesheet import spreadsheets_id, scopes
+from gamepy.gamesheet.gameroom import GameRoom
+
+game_room = GameRoom(spreadsheets_id, scopes)
 
 class Player:
     def __init__(self, name: str, strategies: list[str]):
@@ -15,16 +19,14 @@ class Games:
         pass
     def new(self, game_id):
         game = new_method(self, game_id)
-        # new game will be added to the class property games_played
         if (not self.__class__.games_played or 
             game_id not in self.__class__.games_played):
             self.__class__.games_played[game_id] = [game]
         else:
             self.__class__.games_played[game_id].append(game)
-        return game, game.players
+        return game
     def switch(self, game_id, index=0):
-        game = self.__class__.games_played[game_id][index]
-        return game, game.players
+        return self.__class__.games_played[game_id][index]
     @classmethod
     def new2(cls, game_id):
         game = new_method(cls, game_id)
@@ -33,16 +35,16 @@ class Games:
             cls.games_played[game_id] = [game]
         else:
             cls.games_played[game_id].append(game)
-        return game, game.players
+        return game
     @classmethod
     def switch2(cls, game_id, index = 0):
-        game = cls.games_played[game_id][index]
-        return game, game.players
+        return cls.games_played[game_id][index]
 
 class Game(Games):
-    def __init__(self, player_names, player_strategies, payoffMatrix, name=None):
+    def __init__(self, player_names, player_strategies, payoffMatrix, name=None, game_id=None):
         super().__init__()
         self.name = name
+        self.id = game_id
         self.players = [Player(player_names[i], player_strategies[i]) for i in range(len(player_names))]
         self.payoffMatrix = payoffMatrix
     def payoff(self):
@@ -52,17 +54,21 @@ class Game(Games):
             return self.payoffMatrix[played_strategies]
         else:
             print("Not all players have played their strategies yet.")
+    def create_room(self, room_id):
+        create_room(self, room_id)
 
 # helpers
+
 def new_method(games, game_id):
     selected_game = games.menus[game_id] # access class property
     game = Game(
         selected_game["players"],
         selected_game["strategies"],
-        selected_game["payoff_matrix"]
+        selected_game["payoff_matrix"],
+        game_id = game_id
         )
     return game
-
+# helper function
 def payoff_method(game):
     played_strategies = game.players[0].played_strategy, game.players[1].played_strategy
     if all(played_strategies):
@@ -77,3 +83,8 @@ def play_method(player, played_strategy):
     else:
         player.played_strategy = played_strategy
         
+        
+def create_room(game, room_id):
+    game_room_id = game.id +":"+room_id
+    game_room.register_game_room(game_room_id)
+

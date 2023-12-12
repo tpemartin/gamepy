@@ -9,7 +9,7 @@ from . import scopes, spreadsheets_id
 
 class Service:
     def __init__(self, spreadsheets_id, scopes):
-        self.scopes = ["https://www.googleapis.com/auth/spreadsheets"] #scopes
+        self.scopes = scopes
         self.spreadsheets_id = spreadsheets_id
         self.service = self._build_sheet_service()
     def _build_sheet_service(self):

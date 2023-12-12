@@ -1,5 +1,6 @@
 import re
 from .gamesheet import Sheet
+from . import scopes, spreadsheets_id
 
 class GameRoomIndex:
     (game_room_id,
@@ -14,7 +15,7 @@ class GameRoomIndex:
 
 class GameRoom(Sheet):
     record = dict()
-    def __init__(self, spreadsheets_id, scopes):
+    def __init__(self):
         super().__init__("game-room", spreadsheets_id, scopes)
     def register_game_room(self, game_room_id):
         game_id, room_id = game_room_id.split(":")

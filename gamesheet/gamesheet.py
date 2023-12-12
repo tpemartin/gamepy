@@ -5,16 +5,9 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 import re
+from . import scopes, spreadsheets_id
 
-from . import scopes
-# The ID and range of a sample spreadsheet.
-spreadsheets_id = "1lFqtMo0jicu9JAkHgNisQnIlFQc1mJlJyCLnOuaGQX8"
-
-def test():
-    print(scopes)
-    print(spreadsheets_id)
-
-class GameSheet:
+class Service:
     def __init__(self, spreadsheets_id, scopes):
         self.scopes = scopes
         self.spreadsheets_id = spreadsheets_id
@@ -22,7 +15,7 @@ class GameSheet:
     def _build_sheet_service(self):
         return build_sheet_service(self.scopes)
 
-class Sheet(GameSheet):
+class Sheet(Service):
     def __init__(self, name, spreadsheets_id, scopes, max_col="I"):
         super().__init__(spreadsheets_id, scopes)
         self.name = name

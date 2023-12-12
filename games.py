@@ -2,7 +2,7 @@ from gamepy.gamemenu.menu import menus
 from gamepy.gamesheet.gamesheet import spreadsheets_id, scopes
 from gamepy.gamesheet.gameroom import GameRoom
 
-game_room = GameRoom(spreadsheets_id, scopes)
+game_room = GameRoom()
 
 class Player:
     def __init__(self, name, strategies, game_id=None, isPlayer1=True):

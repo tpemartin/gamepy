@@ -14,6 +14,8 @@ class Player:
         self.played_strategy = None
         self.game_id = game_id
         self.isPlayer1 = isPlayer1
+        self.gameRoomSheet = game_room
+        self.playSheet = playSheet
     def play(self, played_strategy):
         play_method(self, played_strategy)
         game_room_id = self.game_id + ":" + self.room_id
@@ -27,6 +29,10 @@ class Player:
         game_room_id = self.game_id + ":" + room_id
         self.room_id = room_id
         if self.isPlayer1:
+            if game_room_id not in self.gameRoomSheet.record.keys():
+                create_gameRoomSheetRecord(self, room_id)
+            if game_room_id not in self.playSheet.record.keys():
+                create_playSheetRecord(self, room_id)
             self.gameRoomSheet = game_room.register_player1_name(game_room_id, self.name)
             self.playSheet = playSheet.register_player1_name(game_room_id, self.name)
         else:
@@ -130,3 +136,15 @@ def player_payoff(player):
     player.payoff_result = payoff_result[0] if player.isPlayer1 else payoff_result[1]
     print((player.payoff_result, player.game.payoff_result))
     return player
+
+def create_playSheetRecord(player, room_id):
+    game_room_id = player.game_id+':'+room_id
+    rowNumber = player.playSheet._get("A1:A").index([game_room_id])+1
+    player.playSheet.record = {game_room_id: rowNumber}
+    return rowNumber
+
+def create_gameRoomSheetRecord(player, room_id):
+    game_room_id = player.game_id+':'+room_id
+    rowNumber = player.gameRoomSheet._get("A1:A").index([game_room_id])+1
+    player.gameRoomSheet.record = {game_room_id: rowNumber}
+    return rowNumber

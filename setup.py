@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='gamepy',
-    version='1.0.7',
+    version='1.0.8',
     description='Description of your package',
     author='Your Name',
     packages=find_packages(),

@@ -28,18 +28,14 @@ class Player:
     def join(self, room_id):
         game_room_id = self.game_id + ":" + room_id
         self.room_id = room_id
-        if self.isPlayer1:
-            if game_room_id not in self.gameRoomSheet.record.keys():
+        if game_room_id not in self.gameRoomSheet.record.keys():
                 create_gameRoomSheetRecord(self, room_id)
-            if game_room_id not in self.playSheet.record.keys():
+        if game_room_id not in self.playSheet.record.keys():
                 create_playSheetRecord(self, room_id)
+        if self.isPlayer1:
             self.gameRoomSheet = game_room.register_player1_name(game_room_id, self.name)
             self.playSheet = playSheet.register_player1_name(game_room_id, self.name)
         else:
-            if game_room_id not in self.gameRoomSheet.record.keys():
-                create_gameRoomSheetRecord(self, room_id)
-            if game_room_id not in self.playSheet.record.keys():
-                create_playSheetRecord(self, room_id)
             self.gameRoomSheet = game_room.register_player2_name(game_room_id, self.name)
             self.playSheet = playSheet.register_player2_name(game_room_id, self.name)
     def payoff(self):

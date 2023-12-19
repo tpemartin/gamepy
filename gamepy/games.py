@@ -1,8 +1,10 @@
 from gamepy.gamemenu.menu import menus
 from gamepy.gamesheet.gamesheet import spreadsheets_id, scopes
 from gamepy.gamesheet.gameroom import GameRoom
+from gamepy.gamesheet.play import PlaySheet
 
 game_room = GameRoom()
+playSheet = PlaySheet()
 
 class Player:
     def __init__(self, name, strategies, game_id=None, isPlayer1=True):
@@ -15,10 +17,13 @@ class Player:
         play_method(self, played_strategy)
     def join(self, room_id):
         game_room_id = self.game_id + ":" + room_id
+        self.room_id = room_id
         if self.isPlayer1:
             game_room.register_player1_name(game_room_id, self.name)
+            playSheet.register_player1_name(game_room_id, self.name)
         else:
             game_room.register_player2_name(game_room_id, self.name)
+            playSheet.register_player2_name(game_room_id, self.name)
 
 class Games:
     menus = menus
@@ -96,4 +101,6 @@ def play_method(player, played_strategy):
         
 def create_room(game, room_id):
     game_room_id = game.id +":"+room_id
+    game.room_id = room_id
     game_room.register_game_room(game_room_id)
+    playSheet.register_play(game_room_id)

@@ -1,13 +1,14 @@
 from gamepy.gamemenu.menu import menus
 from gamepy.gamesheet.gamesheet import spreadsheets_id, scopes
 from gamepy.gamesheet.gameroom import GameRoom
-from gamepy.gamesheet.play import PlaySheet
+from gamepy.gamesheet.play import PlaySheet, PlayIndex
 
 game_room = GameRoom()
 playSheet = PlaySheet()
 
 class Player:
-    def __init__(self, name, strategies, game_id=None, isPlayer1=True):
+    def __init__(self, game, name, strategies, game_id=None, isPlayer1=True):
+        self.game = game
         self.name = name
         self.strategies = strategies
         self.played_strategy = None
@@ -18,10 +19,10 @@ class Player:
         game_room_id = self.game_id + ":" + self.room_id
         if self.isPlayer1:
             game_room.register_player1_choice(game_room_id, self.played_strategy)
-            playSheet.register_player1_choice(game_room_id, self.played_strategy)
+            self.playSheet = playSheet.register_player1_choice(game_room_id, self.played_strategy)
         else:
             game_room.register_player2_choice(game_room_id, self.played_strategy)
-            playSheet.register_player2_choice(game_room_id, self.played_strategy)
+            self.playSheet = playSheet.register_player2_choice(game_room_id, self.played_strategy)
     def join(self, room_id):
         game_room_id = self.game_id + ":" + room_id
         self.room_id = room_id
@@ -31,6 +32,9 @@ class Player:
         else:
             game_room.register_player2_name(game_room_id, self.name)
             playSheet.register_player2_name(game_room_id, self.name)
+    def payoff(self):
+        player_payoff(self)
+    
         
 
 class Games:
@@ -66,7 +70,7 @@ class Game(Games):
         super().__init__()
         self.name = name
         self.id = game_id
-        self.players = [Player(player_names[i], player_strategies[i], game_id=game_id,
+        self.players = [Player(self, player_names[i], player_strategies[i], game_id=game_id,
                                isPlayer1 = True if i == 0 else False
                                ) for i in range(len(player_names))]
         self.payoffMatrix = payoffMatrix
@@ -112,3 +116,17 @@ def create_room(game, room_id):
     game.room_id = room_id
     game_room.register_game_room(game_room_id)
     playSheet.register_play(game_room_id)
+
+def player_payoff(player):
+    try:
+        playSheetRow = player.playSheet.record[player.game_id+':'+player.room_id]
+        playResult = player.playSheet._get(f"A{playSheetRow}:G{playSheetRow}")
+        player.game.players[0].played_strategy = playResult[0][PlayIndex.player1_choice]
+        player.game.players[1].played_strategy = playResult[0][PlayIndex.player2_choice]
+    except:
+        raise Exception("Other player has not played yet")
+    payoff_result = player.game.payoff()
+    player.game.payoff_result = payoff_result
+    player.payoff_result = payoff_result[0] if player.isPlayer1 else payoff_result[1]
+    print((player.payoff_result, player.game.payoff_result))
+    return player

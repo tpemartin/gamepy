@@ -18,20 +18,20 @@ class Player:
         play_method(self, played_strategy)
         game_room_id = self.game_id + ":" + self.room_id
         if self.isPlayer1:
-            game_room.register_player1_choice(game_room_id, self.played_strategy)
+            self.gameRoomSheet = game_room.register_player1_choice(game_room_id, self.played_strategy)
             self.playSheet = playSheet.register_player1_choice(game_room_id, self.played_strategy)
         else:
-            game_room.register_player2_choice(game_room_id, self.played_strategy)
+            self.gameRoomSheet = game_room.register_player2_choice(game_room_id, self.played_strategy)
             self.playSheet = playSheet.register_player2_choice(game_room_id, self.played_strategy)
     def join(self, room_id):
         game_room_id = self.game_id + ":" + room_id
         self.room_id = room_id
         if self.isPlayer1:
-            game_room.register_player1_name(game_room_id, self.name)
-            playSheet.register_player1_name(game_room_id, self.name)
+            self.gameRoomSheet = game_room.register_player1_name(game_room_id, self.name)
+            self.playSheet = playSheet.register_player1_name(game_room_id, self.name)
         else:
-            game_room.register_player2_name(game_room_id, self.name)
-            playSheet.register_player2_name(game_room_id, self.name)
+            self.gameRoomSheet = game_room.register_player2_name(game_room_id, self.name)
+            self.playSheet = playSheet.register_player2_name(game_room_id, self.name)
     def payoff(self):
         player_payoff(self)
     

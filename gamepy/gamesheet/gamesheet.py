@@ -50,7 +50,6 @@ class Sheet(Service):
         return values
 
 
-   
 def build_sheet_service(scopes):
   """Shows basic usage of the Sheets API.
   Prints values from a sample spreadsheet.
@@ -66,8 +65,12 @@ def build_sheet_service(scopes):
     if creds and creds.expired and creds.refresh_token:
       creds.refresh(Request())
     else:     
+      credentials_path = os.path.join(os.path.dirname(__file__), '../credentials.json')
+    #   flow = InstalledAppFlow.from_client_secrets_file(
+    #       "credentials.json", scopes
+    #   )
       flow = InstalledAppFlow.from_client_secrets_file(
-          "credentials.json", scopes
+          credentials_path, scopes
       )
       creds = flow.run_local_server(port=0)
     # Save the credentials for the next run

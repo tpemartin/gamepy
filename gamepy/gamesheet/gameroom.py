@@ -11,7 +11,10 @@ class GameRoomIndex:
     round_number,
     player1_choice,
     player2_choice,
-    payoff) = [x for x in range(9)]
+    payoff,
+    player1_mix,
+    player2_mix,
+    expect_payoff) = [x for x in range(12)]
 
 class GameRoom(Sheet):
     record = dict()
@@ -35,20 +38,37 @@ class GameRoom(Sheet):
         values[GameRoomIndex.player2_id] = player2_name
         row_index = self.record[game_room_id]
         self._update(row_index, values)
-    def register_player1_choice(self, game_room_id, player1_choice):
+    def register_player1_choice(self, game_room_id, player1_choice, round =1):
         values = [None]*(GameRoomIndex.player1_choice+1)
         values[GameRoomIndex.player1_choice] = player1_choice
         row_index = self.record[game_room_id]
+        self.round=round
         self._update(row_index, values)
         return self
-    def register_player2_choice(self, game_room_id, player2_choice):
+    def register_player2_choice(self, game_room_id, player2_choice, round=1):
         values = [None]*(GameRoomIndex.player2_choice+1)
         values[GameRoomIndex.player2_choice] = player2_choice
         row_index = self.record[game_room_id]
         self._update(row_index, values)
+        self.round=round
         return self
     def register_payoff(self, game_room_id, payoff):
         values = self._create_values(GameRoomIndex.payoff, payoff)
+        row_index = self.record[game_room_id]
+        self._update(row_index, values)
+        return self
+    def register_player1_mix(self, game_room_id, player1_mix):
+        values = self._create_values(GameRoomIndex.player1_mix, player1_mix)
+        row_index = self.record[game_room_id]
+        self._update(row_index, values)
+        return self
+    def register_player2_mix(self, game_room_id, player2_mix):
+        values = self._create_values(GameRoomIndex.player2_mix, player2_mix)
+        row_index = self.record[game_room_id]
+        self._update(row_index, values)
+        return self
+    def register_expect_payoff(self, game_room_id, expect_payoff):
+        values = self._create_values(GameRoomIndex.expect_payoff, expect_payoff)
         row_index = self.record[game_room_id]
         self._update(row_index, values)
         return self

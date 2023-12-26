@@ -2,6 +2,8 @@ from gamepy.gamemenu.menu import menus
 from gamepy.gamesheet.gamesheet import spreadsheets_id, scopes
 from gamepy.gamesheet.gameroom import GameRoom
 from gamepy.gamesheet.play import PlaySheet, PlayIndex
+import numpy as np
+import nashpy as nash
 
 game_room = GameRoom()
 playSheet = PlaySheet()
@@ -16,15 +18,41 @@ class Player:
         self.isPlayer1 = isPlayer1
         self.gameRoomSheet = game_room
         self.playSheet = playSheet
+        self.round = 0
     def play(self, played_strategy):
+        self.playPure = True
         play_method(self, played_strategy)
+        mixed_strategy = convert_to_mixed_strategy(self, played_strategy)
+        mix(self, mixed_strategy)
         game_room_id = self.game_id + ":" + self.room_id
+        self.round += 1
         if self.isPlayer1:
-            self.gameRoomSheet = game_room.register_player1_choice(game_room_id, self.played_strategy)
+            self.gameRoomSheet = game_room.register_player1_choice(game_room_id, self.played_strategy, self.round)
+            self.gameRoomSheet.register_player1_mix(game_room_id, str(self.mixed_strategy))
             self.playSheet = playSheet.register_player1_choice(game_room_id, self.played_strategy)
+            self.playSheet.register_player1_mix(game_room_id, str(self.mixed_strategy))
         else:
-            self.gameRoomSheet = game_room.register_player2_choice(game_room_id, self.played_strategy)
+            self.gameRoomSheet = game_room.register_player2_choice(game_room_id, self.played_strategy, self.round)
+            self.gameRoomSheet.register_player2_mix(game_room_id, str(self.mixed_strategy))
             self.playSheet = playSheet.register_player2_choice(game_room_id, self.played_strategy)
+            self.playSheet.register_player2_mix(game_room_id, str(self.mixed_strategy))   
+    def play_mixed(self, mixed_strategy):
+        self.playPure = False
+        mix(self, mixed_strategy)
+        self.played_strategy = random_play(self)
+        game_room_id = self.game_id + ":" + self.room_id
+        self.round += 1
+        if self.isPlayer1:
+            self.gameRoomSheet = game_room.register_player1_choice(game_room_id, self.played_strategy, self.round)
+            self.gameRoomSheet.register_player1_mix(game_room_id, str(self.mixed_strategy))
+            self.playSheet = playSheet.register_player1_choice(game_room_id, self.played_strategy)
+            self.playSheet.register_player1_mix(game_room_id, str(self.mixed_strategy))
+        else:
+            self.gameRoomSheet = game_room.register_player2_choice(game_room_id, self.played_strategy, self.round)
+            self.gameRoomSheet.register_player2_mix(game_room_id, str(self.mixed_strategy))
+            self.playSheet = playSheet.register_player2_choice(game_room_id, self.played_strategy)
+            self.playSheet.register_player2_mix(game_room_id, str(self.mixed_strategy))
+        
     def join(self, room_id):
         game_room_id = self.game_id + ":" + room_id
         self.room_id = room_id
@@ -40,6 +68,7 @@ class Player:
             self.playSheet = playSheet.register_player2_name(game_room_id, self.name)
     def payoff(self):
         player_payoff(self)
+        print(get_expected_payoff(self.game))
     
         
 
@@ -80,6 +109,7 @@ class Game(Games):
                                isPlayer1 = True if i == 0 else False
                                ) for i in range(len(player_names))]
         self.payoffMatrix = payoffMatrix
+        self._nashpy = generate_nashpyGame(self)
     def payoff(self):
         played_strategies = self.players[0].played_strategy, self.players[1].played_strategy
         if all(played_strategies):
@@ -115,6 +145,7 @@ def play_method(player, played_strategy):
         raise ValueError("Invalid strategy")
     else:
         player.played_strategy = played_strategy
+    return player
         
         
 def create_room(game, room_id):
@@ -148,3 +179,40 @@ def create_gameRoomSheetRecord(player, room_id):
     rowNumber = player.gameRoomSheet._get("A1:A").index([game_room_id])+1
     player.gameRoomSheet.record = {game_room_id: rowNumber}
     return rowNumber
+
+def get_expected_payoff(game):
+    return game._nashpy[game.players[0].mixed_strategy_array, game.players[1].mixed_strategy_array]
+
+def mix(player, mixed_strategy):
+    # convert mixed strategy to array
+    mixed_strategy_array = np.array([v for v in mixed_strategy.values()])
+    player.mixed_strategy = mixed_strategy
+    player.mixed_strategy_array = mixed_strategy_array
+    return player
+
+def generate_nashpyGame(game):
+    payoffMat1= []
+    payoffMat2= []
+    for i in  range(len(game.players[0].strategies)):
+        for j in range(len(game.players[1].strategies)):
+            payoffMat1.append(game.payoffMatrix[(game.players[0].strategies[i], game.players[1].strategies[j])][0])
+            payoffMat2.append(game.payoffMatrix[(game.players[0].strategies[i], game.players[1].strategies[j])][1])
+            print(game.players[0].strategies[i], game.players[1].strategies[j], game.payoffMatrix[(game.players[0].strategies[i], game.players[1].strategies[j])])
+
+    payoffMat1 = np.array(payoffMat1).reshape(len(game.players[0].strategies), len(game.players[1].strategies))
+    payoffMat2 = np.array(payoffMat2).reshape(len(game.players[0].strategies), len(game.players[1].strategies))
+    return nash.Game(payoffMat1, payoffMat2)
+
+def random_play(player):
+    strategies = player.strategies
+    prob = player.mixed_strategy_array
+    return np.random.choice(strategies, p=prob)
+
+def convert_to_mixed_strategy(player, strategy):
+    mixed_strategy = {}
+    for s in player.strategies:
+        if s == strategy:
+            mixed_strategy[s] = 1
+        else:
+            mixed_strategy[s] = 0
+    return mixed_strategy

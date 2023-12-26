@@ -16,7 +16,7 @@ class Service:
         return build_sheet_service(self.scopes)
 
 class Sheet(Service):
-    def __init__(self, name, spreadsheets_id, scopes, max_col="I"):
+    def __init__(self, name, spreadsheets_id, scopes, max_col="L"):
         super().__init__(spreadsheets_id, scopes)
         self.name = name
         self.max_col = max_col
